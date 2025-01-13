@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SwiperJS with Two Sliders</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Catamaran:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        background: url("./assets/images/png/body-bg.webp");
+        background-size: cover;
+        font-family: Arial, sans-serif;
+        background-color: gray;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .parent-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* height: 100vh; */
+        width: 1200px;
+        margin: auto;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .swiper-container {
+        width: 100%;
+        margin: 20px 0;
+        cursor: pointer;
+      }
+
+      .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        height: 78px;
+      }
+
+      .swiper-pagination {
+        margin-top: 20px;
+      }
+
+      .parent-container .testimonial-back-bg {
+        background: url("./assets/images/webp/gradient-3.webp");
+        background-position: center;
+        padding: 20px;
+        border-radius: 32px;
+        width: 100%;
+        max-width: 800px;
+      }
+
+      .parent-container .row {
+        background: rgba(40, 40, 40, 0.7);
+        box-shadow: inset 2px 4px 16px 0 hsla(0, 0%, 97%, 0.06),
+          0 24px 24px -16px rgba(5, 5, 5, 0.09), 0 6px 13px 0 rgba(5, 5, 5, 0.1),
+          0 6px 4px -4px rgba(5, 5, 5, 0.1),
+          0 5px 1.5px -4px rgba(5, 5, 5, 0.25);
+        backdrop-filter: blur(50px);
+        display: flex;
+        flex-direction: column;
+        height: 270px;
+        padding: 0px 20px;
+        border-radius: 32px;
+        overflow: hidden;
+      }
+
+      .parent-container .row .imagebox {
+        position: relative;
+        display: flex;
+        background: hsla(0, 0%, 97%, 0.02);
+        border-radius: 20px;
+        box-sizing: border-box;
+        transition: all 0.2s;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .slider-one .swiper-slide-active {
+        background: hsla(0, 0%, 97%, 0.1);
+        box-shadow: 0 24px 32px -12px hsla(0, 0%, 7%, 0.1),
+          inset 2px 4px 16px 0 hsla(0, 0%, 97%, 0.06);
+        border-radius: 20px;
+      }
+
+      .parent-container .row .imagebox img {
+        position: absolute;
+        left: 20px;
+      }
+
+      .parent-container .row .imagebox span.name {
+        color: white;
+        font-size: 16px;
+        font-family: Montserrat;
+        position: absolute;
+        top: 16px;
+        left: 78px;
+      }
+
+      .parent-container .row .imagebox span.info {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 12px;
+        font-family: Montserrat;
+        position: absolute;
+        top: 38px;
+        left: 78px;
+      }
+
+      .parent-container .content {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .parent-container .content h2 {
+        color: white;
+        margin: 0px;
+        font-size: 20px;
+        font-family: Montserrat;
+        padding: 4px 0px;
+        text-align: center;
+      }
+
+      .parent-container .content span {
+        color: white;
+        margin: 0px;
+        font-size: 16px;
+        font-weight: 400;
+        font-family: Montserrat;
+        text-align: center;
+      }
+
+      /* BEGIN SWIPER PAGINATION WITH ARROWS */
+
+      .swiper-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        margin-top: 100px;
+        width: 14%;
+      }
+
+      .swiper-pagination {
+        flex-grow: 1;
+        text-align: center;
+      }
+
+      .swiper-button-prev {
+        color: white;
+        width: 20px;
+        height: 20px;
+        background-color: transparent;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px;
+        position: absolute;
+        left: -35px;
+        top: -25px;
+      }
+
+      .swiper-button-prev::after {
+        font-size: 10px;
+        color: rgb(177, 173, 173);
+        font-weight: 600;
+      }
+
+      .swiper-button-next {
+        color: white;
+        width: 20px;
+        height: 20px;
+        background-color: transparent;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        padding: 10px;
+        position: absolute;
+        right: -35px;
+        top: -25px;
+      }
+
+      .swiper-button-next::after {
+        font-size: 10px;
+        color: rgb(177, 173, 173);
+        font-weight: 600;
+      }
+
+      .swiper-button-prev:hover,
+      .swiper-button-next:hover {
+        background: hsla(0, 0%, 97%, 0.1);
+        box-shadow: inset 2px 4px 16px 0 hsla(0, 0%, 97%, 0.06);
+        backdrop-filter: blur(50px);
+        padding: 10px;
+      }
+
+      .swiper-horizontal > .swiper-pagination-bullets,
+      .swiper-pagination-bullets.swiper-pagination-horizontal,
+      .swiper-pagination-custom,
+      .swiper-pagination-fraction {
+        bottom: 20%;
+        top: var(--swiper-pagination-top, auto);
+        left: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(40, 40, 40, 0.7);
+        box-shadow: inset 2px 4px 16px 0 hsla(0, 0%, 97%, 0.06),
+          0 24px 24px -16px rgba(5, 5, 5, 0.09), 0 6px 13px 0 rgba(5, 5, 5, 0.1),
+          0 6px 4px -4px rgba(5, 5, 5, 0.1),
+          0 5px 1.5px -4px rgba(5, 5, 5, 0.25);
+        backdrop-filter: blur(50px);
+        padding: 22px 45px;
+        border-radius: 32px;
+        transform: translateX(-50%);
+      }
+
+      .swiper-pagination-clickable .swiper-pagination-bullet {
+        cursor: pointer;
+        background: #bebdbd;
+      }
+
+      .swiper-pagination-bullet-active {
+        opacity: 1;
+        background: #ffffff;
+      }
+
+      /* END SWIPER PAGINATION WITH ARROWS */
+
+      @media (max-width: 1024px) {
+        .parent-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          max-width: 900px;
+          margin: auto;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .swiper-controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          position: relative;
+          margin-top: 100px;
+          width: 18%;
+        }
+      }
+
+      @media (max-width: 880px) {
+        .parent-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          max-width: 700px;
+          margin: auto;
+          position: relative;
+          overflow: hidden;
+        }
+      }
+
+      @media (max-width: 767px) {
+        .parent-container {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+          max-width: 600px;
+          margin: auto;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .parent-container .testimonial-back-bg {
+          background: url("./assets/images/webp/gradient-3.webp");
+          background-position: center;
+          padding: 20px;
+          border-radius: 32px;
+          width: 90%;
+        }
+
+        .swiper-controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          position: relative;
+          margin-top: 100px;
+          width: 24%;
+        }
+      }
+
+      @media (max-width: 448px) {
+        .parent-container .testimonial-back-bg {
+          background: url("./assets/images/webp/gradient-3.webp");
+          background-position: center;
+          padding: 40px 20px;
+          border-radius: 32px;
+          width: 80%;
+        }
+
+        .parent-container .row {
+          height: 330px;
+        }
+
+        .swiper-controls {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          position: relative;
+          margin-top: 100px;
+          width: 35%;
+        }
+
+        .parent-container .content h2 {
+          color: white;
+          margin: 0px;
+          font-size: 20px;
+          font-family: Montserrat;
+          padding: 14px 0px;
+          text-align: center;
+          line-height: 1.7em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent-container">
+      <div class="testimonial-back-bg">
+        <div class="row">
+          <div class="swiper-container slider-one">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Jake L</span>
+
+                  <span class="info">College Student</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-2.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Emma L</span>
+
+                  <span class="info">Markerting Executives</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-3.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Smanatha K.</span>
+
+                  <span class="info">Freelance Writer</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-4.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Ryan M.</span>
+
+                  <span class="info">Enterpreneur</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">David T.</span>
+
+                  <span class="info">Boutique Owner</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-4.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Lila K.</span>
+
+                  <span class="info">Teacher</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-5.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Carlos G.</span>
+
+                  <span class="info">Tech Blogger</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-2.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Margaret W.</span>
+
+                  <span class="info">Retiree</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="imagebox">
+                  <img
+                    src="./assets/images/webp/avatar-4.webp"
+                    alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+
+                  <span class="name">Lauren T.</span>
+
+                  <span class="info">Executive Assistant</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-container slider-two">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>SimpleList revolutionized my daily routine.</h2>
+
+                  <span>I've never been more organized!</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>The intuitive design makes list-making a breeze.</h2>
+
+                  <span>My productivity has soared!</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+
+              <div class="swiper-slide">
+                <div class="content">
+                  <h2>I love how quickly I can create and edit lists.</h2>
+
+                  <span>It's perfect for my fast-paced lifestyle.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination and Navigation Container -->
+
+      <div class="swiper-controls">
+        <div class="swiper-pagination bullets"></div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+
+    <script>
+      const swiperOne = new Swiper(".slider-one", {
+        slidesPerView: 3,
+        spaceBetween: 10,
+        centeredSlides: true,
+        loop: true,
+        speed: 700,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+          // when window width is >= 320px
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          // when window width is >= 768px
+          768: {
+            slidesPerView: 3,
+            spaceBetween: 15,
+          },
+          // when window width is >= 1024px
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 20,
+          },
+        },
+      });
+
+      // Initialize the second slider with navigation and pagination
+
+      const swiperTwo = new Swiper(".slider-two", {
+        slidesPerView: 1,
+        spaceBetween: 10,
+        loop: true,
+        speed: 600,
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+
+      // Synchronize sliders
+
+      swiperOne.on("slideChangeTransitionEnd", () => {
+        const index = swiperOne.realIndex;
+        setTimeout(() => {
+          swiperTwo.slideToLoop(index, 500);
+        }, 200);
+      });
+
+      swiperTwo.on("slideChangeTransitionEnd", () => {
+        const index = swiperTwo.realIndex;
+        swiperOne.slideToLoop(index);
+      });
+
+      // Function to update the active class
+
+      function updateActiveSlide(swiper) {
+        swiper.slides.forEach((slide, index) => {
+          // Always keep the second slide active
+
+          if (index === 1) {
+            slide.classList.add("swiper-slide-always-active");
+          } else {
+            slide.classList.remove("swiper-slide-always-active");
+          }
+
+          // Manage the default active slide
+
+          if (index === swiper.activeIndex) {
+            slide.classList.add("swiper-slide-active");
+          } else {
+            slide.classList.remove("swiper-slide-active");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

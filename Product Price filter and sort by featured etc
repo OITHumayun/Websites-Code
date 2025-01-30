@@ -1,0 +1,242 @@
+// BEGIN CUSTOM PRICE FILTER
+
+function custom_price_filter_and_sort() {
+    // Get current filter values
+    $min_price = isset($_GET['min_price']) ? (float) $_GET['min_price'] : 0;
+    $max_price = isset($_GET['max_price']) ? (float) $_GET['max_price'] : 1000;
+    $sort_order = isset($_GET['sort_by']) ? sanitize_text_field($_GET['sort_by']) : '';
+
+    ob_start();
+    ?>
+    
+    <form method="get" action="<?php echo esc_url(home_url('/shop/')); ?>">
+        <div class="filter-container">
+            <!-- Price Range Filter -->
+            <div class="price-slider-container">
+                <label>Price Range:</label>
+                <input type="range" id="min_price" name="min_price" min="0" max="1000" step="10" value="<?php echo esc_attr($min_price); ?>" oninput="updatePriceRange()">
+                <input type="range" id="max_price" name="max_price" min="0" max="1000" step="10" value="<?php echo esc_attr($max_price); ?>" oninput="updatePriceRange()">
+                <p>Selected: <span id="price_range"><?php echo $min_price . ' - ' . $max_price; ?></span></p>
+            </div>
+
+            <!-- Sort by Options -->
+            <div class="sort-container">
+                <label>Sort by:</label>
+                <select name="sort_by" onchange="this.form.submit()">
+                    <option value="">Default</option>
+                    <option value="featured" <?php selected($sort_order, 'featured'); ?>>Featured</option>
+                    <option value="best_sellers" <?php selected($sort_order, 'best_sellers'); ?>>Best Sellers</option>
+                    <option value="discount" <?php selected($sort_order, 'discount'); ?>>Discount</option>
+                    <option value="low_to_high" <?php selected($sort_order, 'low_to_high'); ?>>Price: Low to High</option>
+                    <option value="high_to_low" <?php selected($sort_order, 'high_to_low'); ?>>Price: High to Low</option>
+                </select>
+            </div>
+
+            <button type="submit">Apply</button>
+        </div>
+    </form>
+
+    <script>
+        function updatePriceRange() {
+            let minPrice = document.getElementById("min_price").value;
+            let maxPrice = document.getElementById("max_price").value;
+            if (parseInt(minPrice) > parseInt(maxPrice)) {
+                let temp = minPrice;
+                minPrice = maxPrice;
+                maxPrice = temp;
+            }
+            document.getElementById("price_range").textContent = minPrice + " - " + maxPrice;
+        }
+    </script>
+
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('custom_price_filter_sort', 'custom_price_filter_and_sort');
+
+function apply_custom_price_sorting_filter( $query ) {
+    if ( is_admin() || ! is_main_query() || ! is_shop() ) return;
+
+    $meta_query = $query->get('meta_query', []);
+
+    // Apply price range filter
+    if ( isset($_GET['min_price']) && is_numeric($_GET['min_price']) ) {
+        $meta_query[] = [
+            'key'     => '_price',
+            'value'   => (float) $_GET['min_price'],
+            'compare' => '>=',
+            'type'    => 'NUMERIC'
+        ];
+    }
+
+    if ( isset($_GET['max_price']) && is_numeric($_GET['max_price']) ) {
+        $meta_query[] = [
+            'key'     => '_price',
+            'value'   => (float) $_GET['max_price'],
+            'compare' => '<=',
+            'type'    => 'NUMERIC'
+        ];
+    }
+
+    $query->set('meta_query', $meta_query);
+
+    // Apply sorting
+    if ( isset($_GET['sort_by']) ) {
+        switch ($_GET['sort_by']) {
+            case 'low_to_high':
+                $query->set('orderby', 'meta_value_num');
+                $query->set('meta_key', '_price');
+                $query->set('order', 'ASC');
+                break;
+
+            case 'high_to_low':
+                $query->set('orderby', 'meta_value_num');
+                $query->set('meta_key', '_price');
+                $query->set('order', 'DESC');
+                break;
+
+            case 'best_sellers':
+                $query->set('meta_key', 'total_sales');
+                $query->set('orderby', 'meta_value_num');
+                $query->set('order', 'DESC');
+                break;
+
+            case 'discount':
+                $query->set('meta_query', [
+                    'relation' => 'AND',
+                    [
+                        'key' => '_sale_price',
+                        'compare' => 'EXISTS'
+                    ],
+                    [
+                        'key' => '_regular_price',
+                        'compare' => 'EXISTS'
+                    ]
+                ]);
+                $query->set('orderby', [
+                    'discount' => 'DESC',
+                ]);
+                $query->set('meta_query', [
+                    'relation' => 'AND',
+                    [
+                        'key' => '_regular_price',
+                        'compare' => 'EXISTS'
+                    ],
+                    [
+                        'key' => '_sale_price',
+                        'compare' => 'EXISTS'
+                    ],
+                    [
+                        'key' => '_discount',
+                        'value' => 0,
+                        'compare' => '>',
+                        'type' => 'NUMERIC'
+                    ]
+                ]);
+                break;
+
+            case 'featured':
+                $query->set('meta_key', '_featured');
+                $query->set('orderby', 'meta_value');
+                $query->set('order', 'DESC');
+                break;
+        }
+    }
+}
+add_action('pre_get_posts', 'apply_custom_price_sorting_filter');
+
+
+
+
+// HERR I AM USING CSS STYLE
+
+
+/* BEGIN PRODUCT ARCHIVE AND SHOP PAGE PRICE BY FILTER */
+
+
+.filter-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+       .price-slider-container, .sort-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+
+
+        input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
+        select {
+            padding: 5px;
+        }
+        .filter-container button {
+            margin-top: 10px;
+            padding: 12x;
+            cursor: pointer;
+    		background: #861828 !important;
+   			border: none !important;
+
+        }
+		
+.filter-container label {
+    color: #666666;
+    font-size: 16px;
+    font-family: 'Roboto';
+}
+
+.filter-container p {
+    margin: 6px 0px 0px 0px;
+    color: #666666;
+    font-size: 14px;
+    font-family: 'Roboto';
+}
+				
+		/* Change track background */
+input[type="range"] {
+    -webkit-appearance: none;
+    /* width: 80%; */
+    height: 8px;
+    background: #0000003b;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.9;
+    transition: opacity .15s ease-in-out;
+}
+
+/* Change the thumb (slider handle) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #861828;
+    border: 2px solid #861828;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #861828;
+    border: 2px solid #861828;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+
+/* END PRODUCT ARCHIVE AND SHOP PAGE PRICE BY FILTER */
+
+// END CUSTOM PRICE FILTER
+
+
+
+
+
+

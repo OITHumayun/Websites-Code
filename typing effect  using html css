@@ -1,0 +1,19 @@
+/* You will write class name to heading or where you want to add text effect it will remove width and the start width */
+
+.home-icon_box_animation h3.porto-sicon-title{
+    width: 100%;
+    text-wrap: nowrap;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    animation: typing 2s steps(100) alternate;
+}
+
+@keyframes typing {
+    from {
+        width: 0%;
+    }
+    to {
+        width: 100%;
+    }
+}
